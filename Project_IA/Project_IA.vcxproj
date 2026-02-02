@@ -130,7 +130,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Background.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PlayerComponent.cpp" />
+    <ClCompile Include="Scene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Background.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="PlayerComponent.h" />
+    <ClInclude Include="Scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
