@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 
+
 class Background
 {
 public:
@@ -23,3 +24,4 @@ private:
     float scrollSpeed;
     float offsetX;
 };
+
