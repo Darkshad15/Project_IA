@@ -1,21 +1,40 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
+#include "Player.h"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({ 1920, 1080 }), "STREAT FIGHTER !");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    sf::RenderWindow window(sf::VideoMode({ 800, 600 }), "STREAT FIGHTER !");
+ 
+    window.setFramerateLimit(60);
+
+    Player* player = new Player();
+    player->Init();
+
+    sf::Clock clock;
 
     while (window.isOpen())
     {
+        float deltaTime = clock.restart().asSeconds();
+ 
         while (const std::optional event = window.pollEvent())
         {
             if (event->is<sf::Event::Closed>())
                 window.close();
         }
 
+        player->Update(deltaTime);
+
+
         window.clear();
-        window.draw(shape);
+
+        player->Draw(window);
+
+
+
         window.display();
     }
+
+    delete player;
+    return 0;
 }
