@@ -2,18 +2,25 @@
 #include <iostream>
 
 
-
-
+Menu::Menu()
+    : currentState(GameState::MAIN_MENU),
+    selectedOption(0),
+    normalColor(sf::Color::White),
+    selectedColor(sf::Color::Blue),
+    backgroundColor(sf::Color(0, 0, 0, 150))
+{
+}
 
 
 void Menu::setupMenu(const std::string& title, sf::Color titleColor, const std::vector<std::string>& options)
 {
     // Background (commun)
-    if (!backgroundTexture.loadFromFile("Assets/Stage Layers/back.png"))
+    if (!backgroundTexture.loadFromFile("../Assets/Stage_Layers/back.png"))
     {
         std::cerr << "Erreur: Impossible de charger le background!" << std::endl;
+        return;
     }
-    backgroundSprite.setTexture(backgroundTexture);
+    //backgroundSprite.setTexture(backgroundTexture);
 
     // Clear
     buttonShapes.clear();
@@ -50,12 +57,186 @@ void Menu::setupMenu(const std::string& title, sf::Color titleColor, const std::
     }
 }
 
+
+void Menu::updateSelection()
+{
+    for (size_t i = 0; i < menuOptions.size(); i++) {
+        if (menuOptions[i].has_value()) {
+            menuOptions[i]->setFillColor(i == selectedOption ? selectedColor : normalColor);
+        }
+        buttonShapes[i].setOutlineColor(i == selectedOption ? selectedColor : normalColor);
+    }
+}
+
+
+
+bool Menu::loadFont(const std::string& fontPath)
+{
+    if (!font.openFromFile("../Assets/Fonts/arialbd.ttf"))
+    {
+        std::cerr << "ERREUR: Impossible de charger la police " << fontPath << std::endl;
+        return false;
+    }
+    setupMainMenu();
+    return true;
+}
+
+
+
+void Menu::setState(GameState state)
+{
+    currentState = state;
+    selectedOption = 0;
+
+    switch (state)
+    {
+    case GameState::MAIN_MENU:
+        setupMainMenu();
+        break;
+
+    case GameState::PLAYING:
+        // Pas de menu en jeu
+        break;
+
+    case GameState::PAUSED:
+        setupPauseMenu();
+        break;
+    case GameState::GAME_OVER:
+        setupEndScreen();
+        break;
+
+    }
+}
+
+
+/*
+void Menu::setScore(int score, int wave)
+{
+    finalScore = score;
+    finalWave = wave;
+}
+*/
+
+
+void Menu::handleInput(sf::Keyboard::Key key)
+{
+    if (currentState == GameState::PLAYING)
+        return;
+
+    int maxOptions = static_cast<int>(buttonShapes.size());
+
+    if (key == sf::Keyboard::Key::Up || key == sf::Keyboard::Key::Z)
+    {
+        selectedOption--;
+        if (selectedOption < 0)
+            selectedOption = maxOptions - 1;
+    }
+    else if (key == sf::Keyboard::Key::Down || key == sf::Keyboard::Key::S)
+    {
+        selectedOption++;
+        if (selectedOption >= maxOptions)
+            selectedOption = 0;
+    }
+
+    // Mettre à jour les couleurs
+    for (size_t i = 0; i < menuOptions.size(); i++)
+    {
+        if (i < buttonShapes.size() && menuOptions[i].has_value())
+        {
+            menuOptions[i]->setFillColor(i == selectedOption ? selectedColor : normalColor);
+            buttonShapes[i].setOutlineColor(i == selectedOption ? selectedColor : normalColor);
+        }
+    }
+}
+
+void Menu::handleMouseMove(const sf::Vector2f& mousePos)
+{
+    if (currentState == GameState::PLAYING)
+        return;
+
+    for (size_t i = 0; i < buttonShapes.size(); i++)
+    {
+        if (buttonShapes[i].getGlobalBounds().contains(mousePos))
+        {
+            selectedOption = static_cast<int>(i);
+
+            // Mettre à jour les couleurs
+            for (size_t j = 0; j < menuOptions.size(); j++)
+            {
+                if (j < buttonShapes.size() && menuOptions[j].has_value())
+                {
+                    menuOptions[j]->setFillColor(j == i ? selectedColor : normalColor);
+                    buttonShapes[j].setOutlineColor(j == i ? selectedColor : normalColor);
+                }
+            }
+            break;
+        }
+    }
+}
+
+void Menu::handleMouseClick(const sf::Vector2f& mousePos)
+{
+    if (currentState == GameState::PLAYING)
+        return;
+
+    for (size_t i = 0; i < buttonShapes.size(); i++)
+    {
+        if (buttonShapes[i].getGlobalBounds().contains(mousePos))
+        {
+            selectedOption = static_cast<int>(i);
+            break;
+        }
+    }
+}
+
+
+
+
 void Menu::setupMainMenu()
 {
-    setupMenu("STREAT FIGHTER !", sf::Color::Cyan, { "START GAME", "QUIT" });
+    setupMenu("STREAT FIGHTER !", sf::Color::Red, { "START GAME", "QUIT" });
 }
 
 void Menu::setupEndScreen()
 {
     setupMenu("GAME OVER", sf::Color::Red, { "NEW GAME", "QUIT" });
+}
+
+
+void Menu::setupPauseMenu()
+{
+    setupMenu("PAUSED", sf::Color::Yellow, { "RESUME", "HELP", "QUIT" });
+}
+
+void Menu::draw(sf::RenderWindow& window)
+{
+    if (currentState == GameState::PLAYING)
+        return;
+
+    //window.draw(backgroundSprite);
+    // Fond semi-transparent
+    sf::RectangleShape overlay(sf::Vector2f(1920.0f, 1080.0f));
+    overlay.setFillColor(backgroundColor);
+    window.draw(overlay);
+    
+
+    // Titre
+    if (titleText.has_value())
+    {
+        window.draw(titleText.value());
+    }
+
+    // Boutons et textes
+    for (size_t i = 0; i < buttonShapes.size(); i++)
+    {
+        window.draw(buttonShapes[i]);
+    }
+
+    for (auto& text : menuOptions)
+    {
+        if (text.has_value())
+        {
+            window.draw(text.value());
+        }
+    }
 }
