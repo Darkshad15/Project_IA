@@ -131,16 +131,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
+    <ClCompile Include="ChaseState.cpp" />
     <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="IA.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PatrolState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
+    <ClInclude Include="ChaseState.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="IA.h" />
+    <ClInclude Include="PatrolState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="StateMachine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
