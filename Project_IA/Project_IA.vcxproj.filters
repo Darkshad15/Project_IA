@@ -25,6 +25,12 @@
     <Filter Include="Fichiers sources\IA">
       <UniqueIdentifier>{e3597a58-b101-4fe8-977d-82878ed3813a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\StateMachine">
+      <UniqueIdentifier>{f2c96735-840c-4248-b47d-10a12384b4b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\StateMachine">
+      <UniqueIdentifier>{10226800-e6c1-4c7e-aee4-f881ee5e3f95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -42,16 +48,25 @@
     <ClCompile Include="Player.cpp">
       <Filter>Fichiers sources\Player</Filter>
     </ClCompile>
-    <ClCompile Include="IA.cpp">
+    <ClCompile Include="NPC.cpp">
+      <Filter>Fichiers sources\IA</Filter>
+    </ClCompile>
+    <ClCompile Include="NPCContext.cpp">
       <Filter>Fichiers sources\IA</Filter>
     </ClCompile>
     <ClCompile Include="StateMachine.cpp">
-      <Filter>Fichiers sources\IA</Filter>
+      <Filter>Fichiers sources\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Fichiers sources\StateMachine</Filter>
     </ClCompile>
     <ClCompile Include="PatrolState.cpp">
-      <Filter>Fichiers sources\IA</Filter>
+      <Filter>Fichiers sources\StateMachine</Filter>
     </ClCompile>
     <ClCompile Include="ChaseState.cpp">
+      <Filter>Fichiers sources\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="Conditions.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,17 +83,34 @@
     <ClInclude Include="Player.h">
       <Filter>Fichiers d%27en-tête\Player</Filter>
     </ClInclude>
-    <ClInclude Include="IA.h">
+    <ClInclude Include="NPC.h">
+      <Filter>Fichiers d%27en-tête\IA</Filter>
+    </ClInclude>
+    <ClInclude Include="NPCContext.h">
       <Filter>Fichiers d%27en-tête\IA</Filter>
     </ClInclude>
     <ClInclude Include="StateMachine.h">
-      <Filter>Fichiers d%27en-tête\IA</Filter>
+      <Filter>Fichiers d%27en-tête\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Fichiers d%27en-tête\StateMachine</Filter>
     </ClInclude>
     <ClInclude Include="PatrolState.h">
-      <Filter>Fichiers d%27en-tête\IA</Filter>
+      <Filter>Fichiers d%27en-tête\StateMachine</Filter>
     </ClInclude>
     <ClInclude Include="ChaseState.h">
+      <Filter>Fichiers d%27en-tête\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="Conditions.h">
       <Filter>Fichiers d%27en-tête\IA</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="StateMachine.inl">
+      <Filter>Fichiers d%27en-tête\StateMachine</Filter>
+    </None>
+    <None Include="State.inl">
+      <Filter>Fichiers d%27en-tête\StateMachine</Filter>
+    </None>
   </ItemGroup>
 </Project>
