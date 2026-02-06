@@ -6,7 +6,6 @@
 #include <vector>
 #include <optional>
 
-
 enum class GameState
 {
     MAIN_MENU, //MENU
@@ -20,65 +19,26 @@ enum class GameState
 class Menu
 {
 private:
-    sf::Font font;
     sf::Texture backgroundTexture;
-    //sf::Sprite backgroundSprite;
-    GameState currentState;
-
-    // Textes
-    std::optional<sf::Text> titleText;
-    std::vector<std::optional<sf::Text>> menuOptions;
-    int selectedOption;
-
-    // Rectangles pour les boutons
-    std::vector<sf::RectangleShape> buttonShapes;
-
-    // Couleurs
-    sf::Color normalColor;
-    sf::Color selectedColor;
-    sf::Color backgroundColor;
-
-    void setupMainMenu();
-    void setupEndScreen();
-    void setupPauseMenu();
-    void setupMenu(const std::string& title, sf::Color titleColor, const std::vector<std::string>& options);
-    void updateSelection();
+    sf::Sprite backgroundSprite;
+    bool backgroundLoaded;
 
 public:
-    Menu();
+    void Init()
+    {
+        if (backgroundTexture.loadFromFile("../Assets/Stage_Layers/MainMenu.png"))
+        {
+            backgroundSprite.setTexture(backgroundTexture);
+            backgroundSprite.setScale({ 2.f, 2.f });
+            backgroundSprite.setPosition({ 0.f, 0.f });
+            backgroundLoaded = true;
+        }
+    }
 
-    bool loadFont(const std::string& fontPath);
-
-    void setState(GameState state);
-    GameState getState() const { return currentState; }
-
-    //void setScore(int score, int wave);
-
-    void handleInput(sf::Keyboard::Key key);
-    void handleMouseMove(const sf::Vector2f& mousePos);
-    void handleMouseClick(const sf::Vector2f& mousePos);
-
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window)
+    {
+        if (backgroundLoaded)
+            window.draw(backgroundSprite);
+        // draw texte et boutons...
+    }
 };
-
-
-/*
-class Game
-{
-
-};
-
-class Pause
-{
-
-};
-
-
-
-
-
-class Tuto
-{
-
-};
-*/

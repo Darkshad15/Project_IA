@@ -1,27 +1,36 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <optional>
-
+#include <string>
 
 class Background 
 {
-public:
-    Background();
-
-    bool loadFromFile(const std::string& filepath);
-
-    void update();
-    void draw(sf::RenderWindow& window);
-
-    void setScrollSpeed(float speed);
-    void setPosition(float x);
-    void move(float offsetX);
-
 private:
-    sf::Texture background;
-    std::optional<sf::Sprite> sprite;
+    sf::Texture* texture;  // pointeur vers texture chargée
+    sf::Sprite* sprite;
+    bool isLoaded;
 
-    float scrollSpeed;
-    float offsetX;
+public:
+    Background() : sprite(nullptr), isLoaded(false) {}
+
+    bool loadFromFile(const std::string& filepath)
+    {
+        if (!texture->loadFromFile(filepath))
+            return false;
+
+        sprite = new sf::Sprite(texture); // OK, pointer
+        isLoaded = true;
+        return true;
+    }
+
+    void draw(sf::RenderWindow& window)
+    {
+        if (isLoaded && sprite)
+            window.draw(*sprite);
+    }
+
+    ~Background()
+    {
+        if (sprite) delete sprite;
+    }
 };
 
