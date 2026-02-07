@@ -1,27 +1,30 @@
 #include "Background.h"
 #include <iostream>
 
-Background::Background() : scrollSpeed(1.0f), offsetX(0.0f)
+Background::Background()
+    : sprite(background),
+      scrollSpeed(1.0f),
+      offsetX(0.0f),
+      offsetY(0.0f), // Initialisation explicite de offsetY
+      isLoaded(false)
 {
-    //
 }
-
-
 
 bool Background::loadFromFile(const std::string& filepath)
 {
-    if (background.loadFromFile("Assets/Previews/Stage/preview_stage.png"))
+    if (!background.loadFromFile(filepath))
     {
         std::cerr << "ERREUR: Impossible de charger le Background" << std::endl;
         return false;
     }
+    sprite.setTexture(background);
+    isLoaded = true;
+    return true;
 }
-
-
 
 void Background::update()
 {
-    if (sprite.has_value())
+    if (isLoaded)
     {
         // Défilement vers le bas
         offsetX += scrollSpeed;
@@ -32,42 +35,40 @@ void Background::update()
             offsetX = 0.0f;
         }
 
-        sprite->setPosition({ 0.0f, offsetX });
+        sprite.setPosition({ 0.0f, offsetX });
     }
 }
 
-
-
 void Background::draw(sf::RenderWindow& window)
 {
-    if (sprite.has_value())
+    if (isLoaded)
     {
         // Dessiner le sprite principal
-        window.draw(sprite.value());
+        window.draw(sprite);
 
         // Dessiner une copie au-dessus pour un défilement continu
-        sf::Vector2f currentPos = sprite->getPosition();
-        sprite->setPosition({ 0.0f, currentPos.y - 1080.0f });
-        window.draw(sprite.value());
+        sf::Vector2f currentPos = sprite.getPosition();
+        sprite.setPosition({ 0.0f, currentPos.y - 1080.0f });
+        window.draw(sprite);
 
         // Remettre la position originale
-        sprite->setPosition(currentPos);
+        sprite.setPosition(currentPos);
     }
 }
 
 void Background::setPosition(float x)
 {
-    if (sprite.has_value())
+    if (isLoaded)
     {
-        sprite->setPosition({});
+        sprite.setPosition({ x, 0.0f });
     }
 }
 
 void Background::move(float offsetX)
 {
-    if (sprite.has_value())
+    if (Background::isLoaded)
     {
-        sprite->move({});
+        sprite.move({ offsetX, 0.0f });
     }
 }
 

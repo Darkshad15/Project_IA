@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <optional>
+#include <string>
 
 class Background
 {
@@ -12,14 +12,18 @@ public:
     void update();
     void draw(sf::RenderWindow& window);
 
-    void setScrollSpeed(float speed);
     void setPosition(float x);
+
     void move(float offsetX);
+
+    void setScrollSpeed(float speed);
 
 private:
     sf::Texture background;
-    std::optional<sf::Sprite> sprite;
+    sf::Sprite sprite;
 
     float scrollSpeed;
-    float offsetX;
+    float offsetX; // Ajout du membre offsetX pour corriger l'erreur
+    float offsetY;
+    bool isLoaded;
 };
