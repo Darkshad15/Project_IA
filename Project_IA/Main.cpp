@@ -1,15 +1,10 @@
 #include <SFML/Graphics.hpp>
-#include "GameState.h"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({ 1960, 1080 }), "STREAT FIGHTER !");
-    Menu* menu = new Menu();
-
-    if (!menu->loadFont("../Assets/Fonts/arialbd.ttf")) {
-        return -1;  // Quitter si erreur
-    }
-    
+    sf::RenderWindow window(sf::VideoMode({ 1920, 1080 }), "STREAT FIGHTER !");
+    sf::CircleShape shape(100.f);
+    shape.setFillColor(sf::Color::Green);
 
     while (window.isOpen())
     {
@@ -20,7 +15,7 @@ int main()
         }
 
         window.clear();
-        menu->draw(window); 
+        window.draw(shape);
         window.display();
     }
 }

@@ -1,6 +1,5 @@
 #include "Background.h"
 #include <iostream>
-#include "GameState.h"
 
 Background::Background() : scrollSpeed(1.0f), offsetX(0.0f)
 {
@@ -9,18 +8,13 @@ Background::Background() : scrollSpeed(1.0f), offsetX(0.0f)
 
 
 
-
 bool Background::loadFromFile(const std::string& filepath)
 {
-    if (background.loadFromFile("../Assets/Previews/Stage/preview_stage.png"))
-
+    if (background.loadFromFile("Assets/Previews/Stage/preview_stage.png"))
     {
         std::cerr << "ERREUR: Impossible de charger le Background" << std::endl;
         return false;
     }
-    sprite.emplace(background);
-
-    return true;
 }
 
 
@@ -41,8 +35,6 @@ void Background::update()
         sprite->setPosition({ 0.0f, offsetX });
     }
 }
-
-
 
 
 
@@ -67,7 +59,7 @@ void Background::setPosition(float x)
 {
     if (sprite.has_value())
     {
-        sprite->setPosition({ x, 0.0f });
+        sprite->setPosition({});
     }
 }
 
@@ -75,7 +67,7 @@ void Background::move(float offsetX)
 {
     if (sprite.has_value())
     {
-        sprite->move({ offsetX, 0.0f });
+        sprite->move({});
     }
 }
 

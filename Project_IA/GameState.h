@@ -9,12 +9,12 @@
 
 enum class GameState
 {
-    MAIN_MENU, //MENU
-    PLAYING, // IN GAME
-    PAUSED,
-    DIDACTICIEL,
-    GAME_OVER, //MENU
-    VICTORY //MENU
+	MAIN_MENU, //MENU
+	PLAYING, // IN GAME
+	PAUSED,
+	DIDACTICIEL,
+	GAME_OVER, //MENU
+	VICTORY //MENU
 };
 
 class Menu
@@ -22,7 +22,7 @@ class Menu
 private:
     sf::Font font;
     sf::Texture backgroundTexture;
-    //sf::Sprite backgroundSprite;
+    sf::Sprite backgroundSprite;
     GameState currentState;
 
     // Textes
@@ -36,13 +36,10 @@ private:
     // Couleurs
     sf::Color normalColor;
     sf::Color selectedColor;
-    sf::Color backgroundColor;
 
     void setupMainMenu();
     void setupEndScreen();
-    void setupPauseMenu();
     void setupMenu(const std::string& title, sf::Color titleColor, const std::vector<std::string>& options);
-    void updateSelection();
 
 public:
     Menu();
@@ -52,7 +49,7 @@ public:
     void setState(GameState state);
     GameState getState() const { return currentState; }
 
-    //void setScore(int score, int wave);
+    void setScore(int score, int wave);
 
     void handleInput(sf::Keyboard::Key key);
     void handleMouseMove(const sf::Vector2f& mousePos);

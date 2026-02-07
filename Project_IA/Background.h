@@ -3,7 +3,7 @@
 #include <optional>
 
 
-class Background 
+class Background
 {
 public:
     Background();
