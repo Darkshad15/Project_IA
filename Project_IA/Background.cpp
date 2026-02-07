@@ -1,70 +1,82 @@
-ï»¿#include "Background.h"
+#include "Background.h"
 #include <iostream>
+#include "GameState.h"
 
-static constexpr float WINDOW_WIDTH = 1920.f;
-static constexpr float WINDOW_HEIGHT = 1080.f;
-
-Background::Background()
-    : sprite(background),
-    scrollSpeed(1.0f),
-    offsetY(0.0f),
-    isLoaded(false)
+Background::Background() : scrollSpeed(1.0f), offsetX(0.0f)
 {
+    //
 }
+
+
+
 
 bool Background::loadFromFile(const std::string& filepath)
 {
-    if (!background.loadFromFile(filepath))
+    if (background.loadFromFile("../Assets/Previews/Stage/preview_stage.png"))
+
     {
-        std::cerr << "ERREUR: Impossible de charger le Background: "
-            << filepath << std::endl;
+        std::cerr << "ERREUR: Impossible de charger le Background" << std::endl;
         return false;
     }
+    sprite.emplace(background);
 
-    sprite.setTexture(background);
-
-    // ðŸ”¥ SCALE pour remplir l'Ã©cran
-    sf::Vector2u texSize = background.getSize();
-    float scaleX = WINDOW_WIDTH / texSize.x;
-    float scaleY = WINDOW_HEIGHT / texSize.y;
-    sprite.setScale({ scaleX, scaleY });
-
-    sprite.setPosition({ 0.f, 0.f });
-
-    isLoaded = true;
     return true;
 }
 
+
+
 void Background::update()
 {
-    if (!isLoaded)
-        return;
+    if (sprite.has_value())
+    {
+        // Défilement vers le bas
+        offsetX += scrollSpeed;
 
-    offsetY += scrollSpeed;
+        // Reset quand on dépasse la hauteur de l'écran
+        if (offsetX >= 1080.0f)
+        {
+            offsetX = 0.0f;
+        }
 
-    float height = sprite.getGlobalBounds().size.y;
-
-    if (offsetY >= height)
-        offsetY = 0.f;
-
-    sprite.setPosition({ 0.f, offsetY });
+        sprite->setPosition({ 0.0f, offsetX });
+    }
 }
+
+
+
+
 
 void Background::draw(sf::RenderWindow& window)
 {
-    if (!isLoaded)
-        return;
+    if (sprite.has_value())
+    {
+        // Dessiner le sprite principal
+        window.draw(sprite.value());
 
-    // Sprite principal
-    window.draw(sprite);
+        // Dessiner une copie au-dessus pour un défilement continu
+        sf::Vector2f currentPos = sprite->getPosition();
+        sprite->setPosition({ 0.0f, currentPos.y - 1080.0f });
+        window.draw(sprite.value());
 
-    // DeuxiÃ¨me sprite pour dÃ©filement infini
-    sf::Vector2f pos = sprite.getPosition();
-    sprite.setPosition({ 0.f, pos.y - sprite.getGlobalBounds().size.y });
-    window.draw(sprite);
+        // Remettre la position originale
+        sprite->setPosition(currentPos);
+    }
+}
 
-    // Remise en place
-    sprite.setPosition(pos);
+void Background::setPosition(float x)
+{
+    if (sprite.has_value())
+    {
+        sprite->setPosition({ x, 0.0f });
+    }
+}
+
+void Background::move(float offsetX)
+{
+    if (sprite.has_value())
+    {
+        sprite->move({ offsetX, 0.0f });
+    }
 }
 
 void Background::setScrollSpeed(float speed)
