@@ -11,7 +11,7 @@ namespace NpcAi
 		{
 			//Check vision
 
-			return true;
+			return false;
 		}
 	};
 }

@@ -53,9 +53,9 @@ void Player::Init()
 
 	sprite = new sf::Sprite(textures[currentState]);
 	sprite->setTexture(textures[currentState]);
-	//sprite->setTextureRect(sf::IntRect({ 0, 0 }, { frameWidth, frameHeight }));
+	
 	sprite->setPosition({ 100.f, 100.f });
-	sprite->setScale({ 2.f, 2.f });
+	sprite->setScale({ 1.f, 1.f });
 
 
 	std::cout << "Sprite configuré sans TextureRect" << std::endl;
