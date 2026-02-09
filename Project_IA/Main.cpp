@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "GameState.h"
 #include "Background.h"
+#include <iostream>
+#include "Player.h"
 
 int main()
 {
@@ -36,6 +38,15 @@ int main()
 
     sf::Clock clock;
 
+    sf::RenderWindow window(sf::VideoMode({ 800, 600 }), "STREAT FIGHTER !");
+ 
+    window.setFramerateLimit(60);
+
+    Player* player = new Player();
+    player->Init();
+
+    sf::Clock clock;
+
     while (window.isOpen())
     {
         float deltaTime = clock.restart().asSeconds();
@@ -43,6 +54,8 @@ int main()
         // ========================
         // Gestion des événements
         // ========================
+        float deltaTime = clock.restart().asSeconds();
+ 
         while (const std::optional event = window.pollEvent())
         {
             if (event->is<sf::Event::Closed>())
@@ -50,147 +63,18 @@ int main()
                 window.close();
             }
 
-            // Gestion clavier
-            if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
-            {
-                GameState currentState = menu.getState();
+        player->Update(deltaTime);
 
-                if (currentState != GameState::PLAYING)
-                {
-                    if (keyPressed->code == sf::Keyboard::Key::Enter ||
-                        keyPressed->code == sf::Keyboard::Key::Space)
-                    {
-                        int selected = menu.getSelectedOption();
 
-                        if (currentState == GameState::MAIN_MENU)
-                        {
-                            if (selected == 0)
-                            {
-                                menu.setState(GameState::PLAYING);
-
-                                if (player == nullptr)
-                                {
-                                    player = new Player();
-                                    player->Init();
-                                }
-                            }
-                            else if (selected == 1)
-                            {
-                                window.close();
-                            }
-                        }
-                        else if (currentState == GameState::PAUSED)
-                        {
-                            if (selected == 0)
-                                menu.setState(GameState::PLAYING);
-                            else if (selected == 2)
-                                window.close();
-                        }
-                        else if (currentState == GameState::GAME_OVER)
-                        {
-                            if (selected == 0)
-                            {
-                                menu.setState(GameState::PLAYING);
-
-                                if (player != nullptr)
-                                    delete player;
-
-                                player = new Player();
-                                player->Init();
-                            }
-                            else if (selected == 1)
-                            {
-                                window.close();
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (keyPressed->code == sf::Keyboard::Key::Escape)
-                    {
-                        menu.setState(GameState::PAUSED);
-                    }
-                }
-            }
-
-            // Gestion souris
-            if (const auto* mouseMoved = event->getIf<sf::Event::MouseMoved>())
-            {
-                sf::Vector2f mousePos(
-                    static_cast<float>(mouseMoved->position.x),
-                    static_cast<float>(mouseMoved->position.y)
-                );
-                menu.handleMouseMove(mousePos);
-            }
-
-            if (const auto* mouseClicked = event->getIf<sf::Event::MouseButtonPressed>())
-            {
-                if (mouseClicked->button == sf::Mouse::Button::Left)
-                {
-                    sf::Vector2f mousePos(
-                        static_cast<float>(mouseClicked->position.x),
-                        static_cast<float>(mouseClicked->position.y)
-                    );
-
-                    menu.handleMouseClick(mousePos);
-
-                    GameState currentState = menu.getState();
-                    int selected = menu.getSelectedOption();
-
-                    if (currentState == GameState::MAIN_MENU)
-                    {
-                        if (selected == 0)
-                        {
-                            menu.setState(GameState::PLAYING);
-
-                            if (player == nullptr)
-                            {
-                                player = new Player();
-                                player->Init();
-                            }
-                        }
-                        else if (selected == 1)
-                        {
-                            window.close();
-                        }
-                    }
-                }
-            }
-        }
-
-        // ========================
-        // Update
-        // ========================
-        if (menu.getState() == GameState::PLAYING && player != nullptr)
-        {
-            background->update();
-            player->Update(deltaTime);
-        }
-
-        // ========================
-        // Draw
-        // ========================
         window.clear();
 
-        if (menu.getState() == GameState::PLAYING)
-        {
-            background->draw(window);
+        player->Draw(window);
 
-            if (player != nullptr)
-                player->Draw(window);
-        }
 
-        menu.draw(window);
 
         window.display();
     }
 
-    // Nettoyage
-    if (player != nullptr)
-        delete player;
-
-    delete background;
-
+    delete player;
     return 0;
 }

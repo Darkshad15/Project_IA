@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 
-class Player
+class Player 
 {
 public:
     enum class State
@@ -37,13 +37,14 @@ public:
     Player();
     ~Player();
 
-    void Init();
-    void Update(float deltaTime);
+	void Init();
+	void Update(float deltaTime);
     void Draw(sf::RenderWindow& window);
-    void HandleInput();
+	void HandleInput();
     void ChangeState(State newState);
     void UpdateAnimation(float deltaTime);
 
     sf::Sprite& GetSprite() { return *sprite; }
 
 };
+

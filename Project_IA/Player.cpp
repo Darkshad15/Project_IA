@@ -71,17 +71,18 @@ void Player::Update(float deltaTime)
 	sprite->move(velocity * deltaTime);
 
 	velocity.x = 0.f;
+	velocity.y = 0.f;
 }
 
 void Player::HandleInput()
 {
-	float speed = 0.1f;
+	float speed = 150.f;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
 		velocity.x = -speed;
 		facingRight = true;
-
+		
 		if (currentState != State::WALK && currentState != State::PUNCH)
 			ChangeState(State::WALK);
 	}
@@ -89,6 +90,22 @@ void Player::HandleInput()
 	{
 		velocity.x = speed;
 		facingRight = false;
+
+		if (currentState != State::WALK && currentState != State::PUNCH)
+			ChangeState(State::WALK);
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+	{
+		velocity.y = speed;
+
+
+		if (currentState != State::WALK && currentState != State::PUNCH)
+			ChangeState(State::WALK);
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+	{
+		velocity.y = -speed;
+
 
 		if (currentState != State::WALK && currentState != State::PUNCH)
 			ChangeState(State::WALK);
@@ -102,6 +119,11 @@ void Player::HandleInput()
 	{
 		if (currentState != State::PUNCH)
 			ChangeState(State::PUNCH);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
+	{
+		if (currentState != State::HURT)
+			ChangeState(State::HURT);
 	}
 }
 
@@ -129,7 +151,7 @@ void Player::ChangeState(State state)
 		break;
 	case Player::State::HURT:
 		frameCount = 4;
-		animationSpeed = 0.1f;
+		animationSpeed = 0.2f;
 		break;
 	case Player::State::PUNCH:
 		frameCount = 3;
@@ -146,7 +168,7 @@ void Player::UpdateAnimation(float deltaTime)
 	{
 		animationTimer = 0.f;
 		currentFrame++;
-
+		
 		if (currentFrame >= frameCount)
 		{
 			currentFrame = 0;
