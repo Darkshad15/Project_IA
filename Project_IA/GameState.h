@@ -20,8 +20,6 @@ class Menu
 {
 private:
     sf::Font font;
-    sf::Texture backgroundTexture;
-    sf::Sprite backgroundSprite;
     GameState currentState;
 
     // Textes
@@ -37,8 +35,11 @@ private:
     sf::Color selectedColor;
     sf::Color backgroundColor;
 
-    bool backgroundLoaded;  // Flag pour savoir si le background est chargé
     bool fontLoaded;
+
+    float windowWidth;
+    float windowHeight;
+
 
     void setupMainMenu();
     void setupEndScreen();
@@ -48,10 +49,15 @@ private:
 public:
     Menu();
 
-    bool loadFont(const std::string& fontPath);
+    void Init();
+
+    void setWindowSize(float width, float height);
 
     void setState(GameState state);
-    GameState getState() const { return currentState; }
+    GameState getState() const 
+    { 
+        return currentState; 
+    }
 
     void handleInput(sf::Keyboard::Key key);
     void handleMouseMove(const sf::Vector2f& mousePos);
@@ -59,5 +65,8 @@ public:
 
     void draw(sf::RenderWindow& window);
 
-    int getSelectedOption() const { return selectedOption; }
+    int getSelectedOption() const 
+    { 
+        return selectedOption; 
+    }
 };

@@ -2,37 +2,68 @@
 #include <iostream>
 
 Menu::Menu()
-    : backgroundSprite(backgroundTexture),  // Initialiser avec la texture
-    titleText(font),  // Initialiser avec la font
+
+    :titleText(font),
     currentState(GameState::MAIN_MENU),
     selectedOption(0),
     normalColor(sf::Color::White),
     selectedColor(sf::Color::Blue),
     backgroundColor(sf::Color(0, 0, 0, 150)),
-    backgroundLoaded(false),
-    fontLoaded(false)
+    fontLoaded(false),
+    windowWidth(800.0f),
+    windowHeight(600.0f)
+
 {
+}
+
+void Menu::Init()
+{
+    std::cout << "=== Début Menu::Init() ===" << std::endl;
+
+    if (!font.openFromFile("../Assets/Fonts/arialbd.ttf"))
+    {
+        std::cerr << "Erreur: Impossible de charger la Police" << std::endl;
+        return;
+
+    }
+        fontLoaded = true;
+        std::cerr << "Police chargée avec succès!" << std::endl;
+
+        setupMainMenu();
+
+        std::cerr << "=== Fin Menu::Init() ===" << std::endl;
+}
+
+void Menu::setWindowSize(float width, float height)
+{
+    windowWidth = width;
+    windowHeight = height;
+
+    switch (currentState)
+    {
+    case GameState::MAIN_MENU:
+        setupMainMenu();
+        break;
+    case GameState::PAUSED:
+        setupPauseMenu();
+        break;
+        case GameState::GAME_OVER:
+            setupEndScreen();
+            break;
+        default:
+            break;
+    }
 }
 
 void Menu::setupMenu(const std::string& title, sf::Color titleColor, const std::vector<std::string>& options)
 {
-    // Background (commun)
-    if (!backgroundLoaded)
-    {
-        if (backgroundTexture.loadFromFile("../Assets/Stage_Layers/back.png"))
-        {
-            backgroundSprite.setTexture(backgroundTexture);
-            backgroundLoaded = true;
-        }
-        else
-        {
-            std::cerr << "Erreur: Impossible de charger le background!" << std::endl;
-        }
-    }
-
     // Clear
     buttonShapes.clear();
     menuOptions.clear();
+
+    float centerX = windowWidth / 2.0f;
+    float centerY = windowHeight / 2.0f;
+
 
     // Titre
     if (fontLoaded)
@@ -41,28 +72,50 @@ void Menu::setupMenu(const std::string& title, sf::Color titleColor, const std::
         titleText.setCharacterSize(80);
         titleText.setFillColor(titleColor);
         titleText.setPosition(sf::Vector2f(960.0f - titleText.getLocalBounds().size.x / 2.0f, 200.0f));
+
+        sf::FloatRect titleBounds = titleText.getLocalBounds();
+        titleText.setOrigin(sf::Vector2f(titleBounds.size.x / 2.0f, titleBounds.size.y / 2.0f));
+        titleText.setPosition(sf::Vector2f(centerX, centerY - 150.0f));
+
     }
 
     // Options
-    for (size_t i = 0; i < options.size(); i++)
-    {
-        sf::Text text(font);
-        text.setString(options[i]);
-        text.setCharacterSize(50);
-        text.setFillColor(i == 0 ? selectedColor : normalColor);
+    if (fontLoaded)
+    { 
+        float buttonWidth = 400.0f;
+        float buttonHeight = 80.0f;
+        float buttonSpacing = 100.0f;
 
-        float yPos = 450.0f + i * 100.0f;
-        text.setPosition(sf::Vector2f(960.0f - text.getLocalBounds().size.x / 2.0f, yPos));
+        // Calculer la position de départ pour centrer verticalement tous les boutons
+        float totalHeight = options.size() * buttonHeight + (options.size() - 1) * (buttonSpacing - buttonHeight);
+        float startY = centerY - totalHeight / 2.0f;
 
-        // Bouton rectangle
-        sf::RectangleShape button(sf::Vector2f(400.0f, 80.0f));
-        button.setPosition(sf::Vector2f(760.0f, yPos - 10.0f));
-        button.setFillColor(sf::Color(50, 50, 50, 150));
-        button.setOutlineThickness(3.0f);
-        button.setOutlineColor(i == 0 ? selectedColor : normalColor);
 
-        buttonShapes.push_back(button);
-        menuOptions.push_back(text);
+        for (size_t i = 0; i < options.size(); i++)
+        {
+            sf::Text text(font);
+            text.setString(options[i]);
+            text.setCharacterSize(50);
+            text.setFillColor(i == 0 ? selectedColor : normalColor);
+
+            float yPos = startY + i * buttonSpacing;
+
+            // *** CENTRAGE DU TEXTE ***
+            sf::FloatRect textBounds = text.getLocalBounds();
+            text.setOrigin(sf::Vector2f(textBounds.size.x / 2.0f, textBounds.size.y / 2.0f));
+            text.setPosition(sf::Vector2f(centerX, yPos + buttonHeight / 2.0f));
+
+            // *** BOUTON CENTRÉ ***
+            sf::RectangleShape button(sf::Vector2f(buttonWidth, buttonHeight));
+            button.setOrigin(sf::Vector2f(buttonWidth / 2.0f, buttonHeight / 2.0f));
+            button.setPosition(sf::Vector2f(centerX, yPos + buttonHeight / 2.0f));
+            button.setFillColor(sf::Color(50, 50, 50, 150));
+            button.setOutlineThickness(3.0f);
+            button.setOutlineColor(i == 0 ? selectedColor : normalColor);
+
+            buttonShapes.push_back(button);
+            menuOptions.push_back(text);
+        }
     }
 }
 
@@ -81,18 +134,6 @@ void Menu::setupPauseMenu()
     setupMenu("PAUSED", sf::Color::Yellow, { "RESUME", "HELP", "QUIT" });
 }
 
-bool Menu::loadFont(const std::string& fontPath)
-{
-    if (!font.openFromFile("../Assets/Fonts/arialbd.ttf"))
-    {
-        std::cerr << "ERREUR: Impossible de charger la police " << fontPath << std::endl;
-        return false;
-    }
-    fontLoaded = true;
-    titleText.setFont(font);  // Mettre à jour la font du titleText
-    setupMainMenu();
-    return true;
-}
 
 void Menu::setState(GameState state)
 {
@@ -112,8 +153,12 @@ void Menu::setState(GameState state)
     case GameState::PAUSED:
         setupPauseMenu();
         break;
+
     case GameState::GAME_OVER:
         setupEndScreen();
+        break;
+
+    case GameState::DIDACTICIEL:
         break;
     }
 }
@@ -193,15 +238,10 @@ void Menu::draw(sf::RenderWindow& window)
 {
     if (currentState == GameState::PLAYING)
         return;
-
-    // Background
-    if (backgroundLoaded)
-    {
-        window.draw(backgroundSprite);
-    }
+ 
 
     // Fond semi-transparent
-    sf::RectangleShape overlay(sf::Vector2f(1920.0f, 1080.0f));
+    sf::RectangleShape overlay(sf::Vector2f(windowWidth, windowHeight));
     overlay.setFillColor(backgroundColor);
     window.draw(overlay);
 
