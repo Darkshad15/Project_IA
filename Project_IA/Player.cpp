@@ -13,7 +13,7 @@ Player::Player() :
 	frameHeight(64),
 	frameCount(4),
 	velocity(0.f, 0.f),
-	facingRight(true)
+	facingRight(false)
 {
 	std::cout << "Player cree" << std::endl;
 }
@@ -57,8 +57,6 @@ void Player::Init()
 	sprite->setPosition({ 100.f, 100.f });
 	sprite->setScale({ 1.f, 1.f });
 
-
-	std::cout << "Sprite configuré sans TextureRect" << std::endl;
 	std::cout << "=== Fin Init() ===" << std::endl;
 
 }
@@ -77,7 +75,7 @@ void Player::HandleInput()
 {
 	float speed = 150.f;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
 	{
 		velocity.x = -speed;
 		facingRight = true;

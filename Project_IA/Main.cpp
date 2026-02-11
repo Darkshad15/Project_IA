@@ -5,7 +5,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({ 800, 600 }), "STREAT FIGHTER !");
+    sf::RenderWindow window(sf::VideoMode({ 800, 600 }), "STREET FIGHTER !");
  
     window.setFramerateLimit(60);
 
@@ -38,15 +38,8 @@ int main()
         window.clear();
 
         player->Draw(window);
-
-        sf::CircleShape debugCircle(10);
-        debugCircle.setFillColor(sf::Color::Red);
-        debugCircle.setPosition({ ctx.position.x - 10, ctx.position.y - 10 });
-        window.draw(debugCircle);
-
-
- 
-        npc->Draw(window);
+        npc->Draw(window); 
+        
         window.display();
     }
 
