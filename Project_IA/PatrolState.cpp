@@ -22,9 +22,25 @@ void NpcAi::PatrolState::Enter(NpcContext& _context)
     _context.waitTimer = 0.0f;
     _context.isWaiting = false;
 
-    if (_context.npc != nullptr)
+    if (!waypoints.empty())
     {
-        _context.npc->SetSpriteState(SpriteState::WALK);
+        float closestDistance = std::numeric_limits<float>::max();
+        int closestIndex = 0;
+
+        for (int i = 0; i < waypoints.size(); i++)
+        {
+            float dx = waypoints[i].x - _context.position.x;
+            float dy = waypoints[i].y - _context.position.y;
+            float distance = dx * dx + dy * dy;
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestIndex = i;
+            }
+        }
+
+        _context.currentWaypointIndex = closestIndex;
     }
 }
 

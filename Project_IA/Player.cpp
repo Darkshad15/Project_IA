@@ -54,7 +54,7 @@ void Player::Init()
 	sprite = new sf::Sprite(textures[currentState]);
 	sprite->setTexture(textures[currentState]);
 	
-	sprite->setPosition({ 100.f, 100.f });
+	sprite->setPosition({ 400.f, 400.f });
 	sprite->setScale({ 1.f, 1.f });
 
 	std::cout << "=== Fin Init() ===" << std::endl;
@@ -188,7 +188,5 @@ void Player::UpdateAnimation(float deltaTime)
 
 void Player::Draw(sf::RenderWindow& window)
 {
-	// Test 2: Votre sprite normal
 	window.draw(*sprite);
-
 }

@@ -7,7 +7,9 @@
 #include "ChaseState.h"
 #include "PatrolState.h"
 
+
 using namespace NpcAi;
+
 
 
 class Npc
@@ -47,6 +49,9 @@ public:
 
     sf::Sprite& GetSprite() { return *sprite; }
     const NpcContext& GetContext() const { return context; }
+
+
+    void SetPlayer(Player* player);
 
 };
 

@@ -16,6 +16,8 @@ int main()
     Npc* npc = new Npc();
     npc->Init();
 
+    npc->SetPlayer(player);
+
 
     sf::Clock clock;
 

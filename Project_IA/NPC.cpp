@@ -1,5 +1,6 @@
 #include "NPC.h"
 
+
 Npc::Npc() :
     context(),
     sprite(nullptr),  
@@ -21,6 +22,7 @@ Npc::Npc() :
     context.isWaiting = false;
     context.sprite = nullptr;
     context.currentSpriteState = SpriteState::IDLE;
+    context.player = nullptr;
 }
 
 Npc::~Npc()
@@ -85,10 +87,8 @@ void Npc::Init()
 
     // Définir les waypoints
     std::vector<Vector2> patrolPoints = {
-        {100.0f, 100.0f},
-        {400.0f, 100.0f},
-        {400.0f, 400.0f},
-        {100.0f, 400.0f}
+        {context.position.x, context.position.y + 100.0f},
+        {context.position.x + 300.0f,context.position.y + 100.0f},
     };
 
     // Créer les états
@@ -100,10 +100,9 @@ void Npc::Init()
 
     // Ajouter les transitions
     patrolState->AddTransition(Conditions::IsSeeingPlayer, chaseState);
-    chaseState->AddTransition([](const NpcContext _context)
-        {
-            return !Conditions::IsSeeingPlayer(_context);
-        }, patrolState);
+
+    chaseState->AddTransition(Conditions::HasLostPlayer, patrolState);
+
 
     fsm.Init(patrolState, context);
 
@@ -131,6 +130,8 @@ void Npc::UpdateAnimation(float deltaTime)
 
 void Npc::Update(float deltaTime)
 {
+    context.deltaTime = deltaTime;
+
     fsm.Update(context);
 
     if (sprite != nullptr)
@@ -183,4 +184,9 @@ void Npc::SetSpriteState(SpriteState state)
             { static_cast<int>(frameWidth), static_cast<int>(frameHeight) }
         ));
     }
+}
+
+void Npc::SetPlayer(Player* player)
+{
+    context.player = player;
 }

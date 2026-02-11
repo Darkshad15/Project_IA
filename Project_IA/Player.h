@@ -2,6 +2,8 @@
 #include <map>
 #include <string>
 #include <SFML/Graphics.hpp>
+#include <vector>
+#include "NPCContext.h"
 
 
 class Player 
@@ -32,7 +34,10 @@ private:
     sf::Vector2f velocity;
     bool facingRight;
 
+    Vector2 position;
+
 public:
+
 
     Player();
     ~Player();
@@ -45,6 +50,8 @@ public:
     void UpdateAnimation(float deltaTime);
 
     sf::Sprite& GetSprite() { return *sprite; }
+
+    Vector2 Getposition() const { return position; }
 
 };
 

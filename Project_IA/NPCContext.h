@@ -8,6 +8,7 @@ struct Vector2
 };
 
 class Npc;
+class Player;
 
 enum class SpriteState
 {
@@ -21,6 +22,8 @@ class NpcContext
 {
 public :
 	Npc* npc = nullptr;
+	Player* player = nullptr;
+
 	Vector2 position = { 0.f, 0.f };
 	Vector2 velocity = { 0.f, 0.f };
 
@@ -35,5 +38,12 @@ public :
 	std::vector<Vector2> patrolWaypoints;
 	float patrolSpeed = 1.0f;
 	float patrolWaitTime = 0.01f;
+	float deltaTime = 0.f;
+
+
+	float lostPlayerTimer = 0.f;  // Timer depuis la dernière fois qu'on a vu le joueur
+	Vector2 lastKnownPlayerPosition = { 0.f, 0.f };  // Dernière position connue du joueur
 };
+
+
 
