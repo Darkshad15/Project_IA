@@ -7,7 +7,7 @@ class Background
 public:
     Background();
 
-    void Init();
+    void Init(const std::string& filepath);
 
     bool loadFromFile(const std::string& filepath);
 
@@ -23,6 +23,7 @@ public:
 private:
     sf::Texture background;
     sf::Sprite sprite;
+
 
     float scrollSpeed;
     float offsetX; // Ajout du membre offsetX pour corriger l'erreur

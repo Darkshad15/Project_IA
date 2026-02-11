@@ -8,8 +8,8 @@ Menu::Menu()
     selectedOption(0),
     normalColor(sf::Color::White),
     selectedColor(sf::Color::Blue),
-    backgroundColor(sf::Color(100, 10, 10, 150)),
     fontLoaded(false),
+    backgroundColor(sf::Color(0, 0, 0, 0)),
     windowWidth(800.0f),
     windowHeight(600.0f)
 
@@ -262,3 +262,5 @@ void Menu::draw(sf::RenderWindow& window)
         window.draw(text);
     }
 }
+
+

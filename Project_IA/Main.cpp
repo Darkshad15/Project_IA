@@ -14,16 +14,24 @@ int main()
 
 
     Menu menu;
-    Background background;
+    Background menubackground;
+    Background gamebackground;
+    Background pausebackground;
+    Background endbackground;
+
+
+
     Player* player = new Player();
 
     menu.Init();
-    background.Init();
+    menubackground.Init("../Assets/Background/MainMenu.png");
+    gamebackground.Init("../Assets/Background/GameMap.png");
+
     player->Init();
 
     sf::Vector2u windowSize = window.getSize();
     menu.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
-    background.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
+    menubackground.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
 
 
 
@@ -54,7 +62,7 @@ int main()
 
                 // Informer les objets de la nouvelle taille
                 menu.setWindowSize(static_cast<float>(resizeEvent->size.x), static_cast<float>(resizeEvent->size.y));
-                background.setWindowSize(static_cast<float>(resizeEvent->size.x), static_cast<float>(resizeEvent->size.y));
+                menubackground.setWindowSize(static_cast<float>(resizeEvent->size.x), static_cast<float>(resizeEvent->size.y));
             }
 
             // Gestion souris
@@ -180,12 +188,12 @@ int main()
         if (menu.getState() == GameState::PLAYING)
         {
             player->Update(deltaTime);
-            background.update();
+            gamebackground.update();
         }
         else
         {
             // Update du background même dans les menus pour l'animation
-            background.update();
+            gamebackground.update();
         }
 
         // Rendu
@@ -194,13 +202,13 @@ int main()
         if (menu.getState() == GameState::PLAYING)
         {
             // Mode jeu : afficher background et joueur
-            background.draw(window);
+            gamebackground.draw(window);
             player->Draw(window);
         }
         else
         {
             // Mode menu : afficher background et menu
-            background.draw(window);
+            gamebackground.draw(window);
             menu.draw(window);
         }
 

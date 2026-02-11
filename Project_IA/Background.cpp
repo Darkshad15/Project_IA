@@ -12,13 +12,14 @@ Background::Background()
       windowWidth(800.0f),
       windowHeight(600.0f)
 {
+    sprite.setTextureRect(sf::IntRect({ 0,0 }, { 1024,205 }));
 }
 
-void Background::Init()
+void Background::Init(const std::string& filepath)
 {
     std::cout << "=== Début Background::Init() ===" << std::endl;
 
-    if (!background.loadFromFile("../Assets/Background/MainMenu.png"))
+    if (!background.loadFromFile(filepath))
     {
         std::cerr << "Erreur: Impossible de charger le Background du Menu" << std::endl;
         isLoaded = false;
@@ -123,6 +124,7 @@ void Background::setPosition(float x)
         sprite.setPosition({ x, 0.0f });
     }
 }
+
 
 void Background::move(float offsetX)
 {
