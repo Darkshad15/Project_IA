@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "GameState.h"
 #include "Background.h"
+#include "NPC.h"
 
 
 int main()
@@ -30,6 +31,15 @@ int main()
     menu.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
     menubackground.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
     gamebackground.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
+    
+
+    Npc* npc = new Npc();
+    npc->Init();
+
+    npc->SetPlayer(player);
+
+
+    sf::Clock clock;
 
 
 
@@ -194,7 +204,8 @@ int main()
             gamebackground.update();
         }
 
-        // Rendu
+        const NpcContext& ctx = npc->GetContext();
+
         window.clear();
 
         if (menu.getState() == GameState::PLAYING)

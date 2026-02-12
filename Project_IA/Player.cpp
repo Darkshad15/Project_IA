@@ -13,7 +13,9 @@ Player::Player() :
 	frameHeight(64),
 	frameCount(4),
 	velocity(0.f, 0.f),
-	facingRight(true)
+	facingRight(false),
+	//showHitbox(true),
+	position({ 0.f, 0.f })
 {
 	std::cout << "Player cree" << std::endl;
 }
@@ -53,12 +55,19 @@ void Player::Init()
 
 	sprite = new sf::Sprite(textures[currentState]);
 	sprite->setTexture(textures[currentState]);
-	//sprite->setTextureRect(sf::IntRect({ 0, 0 }, { frameWidth, frameHeight }));
-	sprite->setPosition({ 100.f, 100.f });
-	sprite->setScale({ 2.f, 2.f });
+
+	sprite->setPosition({ 400.f, 400.f });
+	sprite->setScale({ 1.f, 1.f });
 
 
-	std::cout << "Sprite configuré sans TextureRect" << std::endl;
+	// CONFIGURER LA HITBOX
+	hitboxShape.setSize(sf::Vector2f(frameWidth , frameHeight));
+	hitboxShape.setOrigin({ frameWidth / 2.f  , frameHeight / 2.f });  // Même origine que le sprite
+	hitboxShape.setScale({ 0.8f, 1.f });
+	hitboxShape.setFillColor(sf::Color::Transparent);
+	//hitboxShape.setOutlineColor(sf::Color::Green);
+	hitboxShape.setOutlineThickness(2.0f);
+
 	std::cout << "=== Fin Init() ===" << std::endl;
 
 	std::cout << "=== Fin Init() ===" << std::endl;
@@ -78,7 +87,7 @@ void Player::HandleInput()
 {
 	float speed = 150.f;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
 	{
 		velocity.x = -speed;
 		facingRight = true;
@@ -124,6 +133,16 @@ void Player::HandleInput()
 	{
 		if (currentState != State::HURT)
 			ChangeState(State::HURT);
+	}
+
+	// AJOUTER CECI : Synchroniser la variable position avec le sprite
+	if (sprite != nullptr)
+	{
+		sf::Vector2f spritePos = sprite->getPosition();
+		position.x = spritePos.x + (frameHeight / 1.5f);
+		position.y = spritePos.y + (frameWidth / 3.f);
+
+		hitboxShape.setPosition({ position.x, position.y });
 	}
 }
 
@@ -191,7 +210,34 @@ void Player::UpdateAnimation(float deltaTime)
 
 void Player::Draw(sf::RenderWindow& window)
 {
-	// Test 2: Votre sprite normal
 	window.draw(*sprite);
+	DrawHitbox(window);
+}
+void Player::DrawHitbox(sf::RenderWindow& window)
+{
+	if (!showHitbox)
+	{
+		return;
+	}
 
+	window.draw(hitboxShape);
+
+	/*
+	//  Optionnel : Afficher un point central
+	sf::CircleShape centerDot(3.0f);
+	centerDot.setOrigin({ 1.0f, 1.0f });
+	centerDot.setPosition({ position.x , position.y});
+	centerDot.setFillColor(sf::Color::Red);
+	window.draw(centerDot);*/
+}
+
+void Player::ToggleHitbox()
+{
+	showHitbox = !showHitbox;
+	std::cout << "Player hitbox: " << (showHitbox ? "ON" : "OFF") << std::endl;
+}
+
+sf::FloatRect Player::GetHitbox() const
+{
+	return hitboxShape.getGlobalBounds();
 }
