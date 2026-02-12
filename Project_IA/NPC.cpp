@@ -15,7 +15,7 @@ Npc::Npc() :
     facingRight(true),
     visionCircle(),
     visionCone(),
-    showVisionDebug(true),  // Activé par défaut
+    //showVisionDebug(true),  // Activé par défaut
     visionRange(200.0f),
     visionAngle(90.0f)
 {
