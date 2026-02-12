@@ -1,23 +1,22 @@
-#include "Background.h"
+Ôªø#include "Background.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
 
 Background::Background()
     : sprite(background),
-      scrollSpeed(1.0f),
-      offsetX(0.0f),
-      offsetY(0.0f), // Initialisation explicite de offsetY
-      isLoaded(false),
-      windowWidth(800.0f),
-      windowHeight(600.0f)
+    scrollSpeed(1.0f),
+    offsetX(0.0f),
+    offsetY(0.0f),
+    isLoaded(false),
+    windowWidth(800.0f),
+    windowHeight(600.0f)
 {
-    sprite.setTextureRect(sf::IntRect({ 0,0 }, { 1024,205 }));
 }
 
 void Background::Init(const std::string& filepath)
 {
-    std::cout << "=== DÈbut Background::Init() ===" << std::endl;
+    std::cout << "=== D√©but Background::Init() ===" << std::endl;
 
     if (!background.loadFromFile(filepath))
     {
@@ -27,11 +26,16 @@ void Background::Init(const std::string& filepath)
     }
 
     sprite.setTexture(background);
+
+    // D√©finir le rect en fonction de la taille r√©elle de la texture
+    sf::Vector2u textureSize = background.getSize();
+    sprite.setTextureRect(sf::IntRect({ 0, 0 }, { static_cast<int>(textureSize.x), static_cast<int>(textureSize.y) }));
+
     isLoaded = true;
 
     updateScale();
 
-    std::cout << "Background chargÈ avec succËs!" << std::endl;
+    std::cout << "Background charg√© avec succ√©s!" << std::endl;
     std::cout << "=== Fin Background::Init" << std::endl;
 
 }
@@ -63,11 +67,11 @@ void Background::updateScale()
     // Obtenir la taille de la texture
     sf::Vector2u textureSize = background.getSize();
 
-    // Calculer le ratio pour couvrir toute la fenÍtre
+    // Calculer le ratio pour couvrir toute la fen√©tre
     float scaleX = windowWidth / static_cast<float>(textureSize.x);
     float scaleY = windowHeight / static_cast<float>(textureSize.y);
 
-    // Utiliser le plus grand ratio pour que l'image couvre toute la fenÍtre
+    // Utiliser le plus grand ratio pour que l'image couvre toute la fen√©tre
     float scale = std::max(scaleX, scaleY);
 
     sprite.setScale({ scale, scale });
@@ -80,18 +84,18 @@ void Background::updateScale()
 
     sprite.setPosition({ centeredOffsetX, centeredOffsetY });
 
-    std::cout << "Background redimensionnÈ - Scale: " << scale << std::endl;
+    std::cout << "Background redimensionn√© - Scale: " << scale << std::endl;
 }
 
 void Background::update()
 {
     if (isLoaded)
     {
-        // DÈfilement vers le bas
+        // D√©filement vers la droite
         offsetX += scrollSpeed;
 
-        // Reset quand on dÈpasse la hauteur de l'Ècran
-        if (offsetX >= 1080.0f)
+        // Reset quand on d√©passe la hauteur de l'√©cran
+        if (offsetX <= 1080.0f)
         {
             offsetX = 0.0f;
         }
@@ -107,7 +111,7 @@ void Background::draw(sf::RenderWindow& window)
         // Dessiner le sprite principal
         window.draw(sprite);
 
-        // Dessiner une copie au-dessus pour un dÈfilement continu
+        // Dessiner une copie au-dessus pour un d√©filement continu
         sf::Vector2f currentPos = sprite.getPosition();
         sprite.setPosition({ 0.0f, currentPos.y - 1080.0f });
         window.draw(sprite);

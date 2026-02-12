@@ -16,9 +16,6 @@ int main()
     Menu menu;
     Background menubackground;
     Background gamebackground;
-    Background pausebackground;
-    Background endbackground;
-
 
 
     Player* player = new Player();
@@ -32,6 +29,7 @@ int main()
     sf::Vector2u windowSize = window.getSize();
     menu.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
     menubackground.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
+    gamebackground.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
 
 
 
@@ -188,7 +186,7 @@ int main()
         if (menu.getState() == GameState::PLAYING)
         {
             player->Update(deltaTime);
-            gamebackground.update();
+            menubackground.update();
         }
         else
         {
@@ -208,7 +206,7 @@ int main()
         else
         {
             // Mode menu : afficher background et menu
-            gamebackground.draw(window);
+            menubackground.draw(window);
             menu.draw(window);
         }
 
