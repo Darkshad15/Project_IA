@@ -13,7 +13,9 @@ Player::Player() :
 	frameHeight(64),
 	frameCount(4),
 	velocity(0.f, 0.f),
-	facingRight(false)
+	facingRight(false),
+	showHitbox(true),
+	position({ 0.f, 0.f })
 {
 	std::cout << "Player cree" << std::endl;
 }
@@ -53,9 +55,17 @@ void Player::Init()
 
 	sprite = new sf::Sprite(textures[currentState]);
 	sprite->setTexture(textures[currentState]);
-	
+
 	sprite->setPosition({ 400.f, 400.f });
 	sprite->setScale({ 1.f, 1.f });
+
+
+	// CONFIGURER LA HITBOX
+	hitboxShape.setSize(sf::Vector2f(frameWidth, frameHeight));
+	hitboxShape.setOrigin({ frameWidth / 2.0f, frameHeight / 2.0f });  // Même origine que le sprite
+	hitboxShape.setFillColor(sf::Color::Transparent);
+	hitboxShape.setOutlineColor(sf::Color::Green);
+	hitboxShape.setOutlineThickness(2.0f);
 
 	std::cout << "=== Fin Init() ===" << std::endl;
 
@@ -121,6 +131,16 @@ void Player::HandleInput()
 	{
 		if (currentState != State::HURT)
 			ChangeState(State::HURT);
+	}
+
+	// AJOUTER CECI : Synchroniser la variable position avec le sprite
+	if (sprite != nullptr)
+	{
+		sf::Vector2f spritePos = sprite->getPosition();
+		position.x = spritePos.x;
+		position.y = spritePos.y;
+
+		hitboxShape.setPosition({ position.x, position.y });
 	}
 }
 
@@ -189,4 +209,32 @@ void Player::UpdateAnimation(float deltaTime)
 void Player::Draw(sf::RenderWindow& window)
 {
 	window.draw(*sprite);
+	DrawHitbox(window);
+}
+void Player::DrawHitbox(sf::RenderWindow& window)
+{
+	if (!showHitbox)
+	{
+		return;
+	}
+
+	window.draw(hitboxShape);
+
+	//  Optionnel : Afficher un point central
+	sf::CircleShape centerDot(3.0f);
+	centerDot.setOrigin({ 1.0f, 1.0f });
+	centerDot.setPosition({ position.x , position.y});
+	centerDot.setFillColor(sf::Color::Red);
+	window.draw(centerDot);
+}
+
+void Player::ToggleHitbox()
+{
+	showHitbox = !showHitbox;
+	std::cout << "Player hitbox: " << (showHitbox ? "ON" : "OFF") << std::endl;
+}
+
+sf::FloatRect Player::GetHitbox() const
+{
+	return hitboxShape.getGlobalBounds();
 }

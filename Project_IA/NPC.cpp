@@ -1,17 +1,23 @@
 #include "NPC.h"
-
+#include "Player.h"
+#include <SFML/Graphics.hpp>
 
 Npc::Npc() :
     context(),
-    sprite(nullptr),  
+    sprite(nullptr),
     textures(),
-    frameWidth(0),      
-    frameHeight(0),     
+    frameWidth(0),
+    frameHeight(0),
     currentFrame(0),
     frameCount(4),
     animationTimer(0.f),
     animationSpeed(0.15f),
-    facingRight(false)
+    facingRight(true),
+    visionCircle(),
+    visionCone(),
+    showVisionDebug(true),  // Activé par défaut
+    visionRange(200.0f),
+    visionAngle(90.0f)
 {
     std::cout << "NPC cree" << std::endl;
     context.npc = nullptr;
@@ -23,6 +29,11 @@ Npc::Npc() :
     context.sprite = nullptr;
     context.currentSpriteState = SpriteState::IDLE;
     context.player = nullptr;
+    context.lostPlayerTimer = 0.f;
+
+    context.facingRight = !facingRight;
+    context.visionRange = visionRange;
+    context.visionAngle = visionAngle;
 }
 
 Npc::~Npc()
@@ -88,7 +99,7 @@ void Npc::Init()
     // Définir les waypoints
     std::vector<Vector2> patrolPoints = {
         {context.position.x, context.position.y + 100.0f},
-        {context.position.x + 300.0f,context.position.y + 100.0f},
+        {context.position.x + 100.0f,context.position.y + 100.0f},
     };
 
     // Créer les états
@@ -136,20 +147,20 @@ void Npc::Update(float deltaTime)
 
     if (sprite != nullptr)
     {
-        // Synchroniser la position
         sprite->setPosition({ context.position.x, context.position.y });
 
-        // Mettre à jour la direction si le NPC se déplace
+        // Mettre à jour la direction
         if (context.velocity.x > 0.01f)
         {
             facingRight = false;
+            context.facingRight = !facingRight;  //  Synchroniser avec le context
         }
         else if (context.velocity.x < -0.01f)
         {
             facingRight = true;
+            context.facingRight = !facingRight;  // Synchroniser avec le context
         }
 
-        // Appliquer le flip
         sprite->setScale({ facingRight ? 1.f : -1.f, 1.f });
     }
 
@@ -159,7 +170,114 @@ void Npc::Update(float deltaTime)
 
 void Npc::Draw(sf::RenderWindow& window)
 {
+    DrawVisionDebug(window);
+
     window.draw(*sprite);  
+}
+
+
+void Npc::DrawVisionDebug(sf::RenderWindow& window)
+{
+    if (!showVisionDebug)
+    {
+        return;
+    }
+
+    // Calculer la direction du NPC
+    float npcDirection = context.facingRight ? 0.0f : 180.0f;
+    float halfAngle = context.visionAngle / 2.0f;
+
+    // Créer un cône avec arc arrondi
+    const int arcPoints = 30;
+    visionCone.setPointCount(arcPoints + 2);
+
+    // Point central (position du NPC)
+    visionCone.setPoint(0, sf::Vector2f(0, 0));
+
+    // Points de l'arc
+    for (int i = 0; i <= arcPoints; i++)
+    {
+        float angle = (npcDirection - halfAngle + (context.visionAngle * i / arcPoints)) * 3.14159f / 180.0f;
+        visionCone.setPoint(i + 1, sf::Vector2f(
+            std::cos(angle) * context.visionRange,
+            std::sin(angle) * context.visionRange
+        ));
+    }
+
+    visionCone.setPosition({ context.position.x, context.position.y });
+
+    // Changer la couleur selon l'état
+    if (Conditions::IsSeeingPlayer(context))
+    {
+        // Rouge si le joueur est détecté
+        visionCone.setFillColor(sf::Color(255, 0, 0, 80));
+        visionCone.setOutlineColor(sf::Color(255, 0, 0, 200));
+    }
+    else
+    {
+        // Vert normal
+        visionCone.setFillColor(sf::Color(0, 255, 0, 50));
+        visionCone.setOutlineColor(sf::Color(0, 255, 0, 150));
+    }
+    visionCone.setOutlineThickness(2.0f);
+
+    window.draw(visionCone);
+
+    // Ligne vers le joueur si visible
+    if (context.player != nullptr && Conditions::IsSeeingPlayer(context))
+    {
+        sf::Vertex line[] = {
+            sf::Vertex(sf::Vector2f(context.position.x, context.position.y), sf::Color::Red),
+            sf::Vertex(sf::Vector2f(context.player->Getposition().x, context.player->Getposition().y), sf::Color::Red)
+        };
+        window.draw(line, 2, sf::PrimitiveType::Lines);
+
+        // Point sur le joueur détecté
+        sf::CircleShape playerDot(8.0f);
+        playerDot.setOrigin({ 8.0f, 8.0f });
+        playerDot.setPosition({ context.player->Getposition().x, context.player->Getposition().y });
+        playerDot.setFillColor(sf::Color::Red);
+        playerDot.setOutlineColor(sf::Color::White);
+        playerDot.setOutlineThickness(2.0f);
+        window.draw(playerDot);
+    }
+
+    // Afficher la dernière position connue
+    if (context.lostPlayerTimer > 0.0f && context.lostPlayerTimer < 2.0f)
+    {
+        sf::CircleShape lastPosMarker(10.0f);
+        lastPosMarker.setOrigin({ 10.0f, 10.0f });
+        lastPosMarker.setPosition({ context.lastKnownPlayerPosition.x, context.lastKnownPlayerPosition.y });
+        lastPosMarker.setFillColor(sf::Color(255, 165, 0, 100));  // Orange
+        lastPosMarker.setOutlineColor(sf::Color(255, 165, 0, 255));
+        lastPosMarker.setOutlineThickness(2.0f);
+        window.draw(lastPosMarker);
+
+        // Ligne pointillée vers la dernière position
+        sf::Vertex dashedLine[] = {
+            sf::Vertex(sf::Vector2f(context.position.x, context.position.y), sf::Color(255, 165, 0, 150)),
+            sf::Vertex(sf::Vector2f(context.lastKnownPlayerPosition.x, context.lastKnownPlayerPosition.y), sf::Color(255, 165, 0, 150))
+        };
+        window.draw(dashedLine, 2, sf::PrimitiveType::Lines);
+    }
+
+    // Afficher la direction avec une flèche
+    float arrowLength = 40.0f;
+    float arrowAngle = npcDirection * 3.14159f / 180.0f;
+    sf::Vertex arrow[] = {
+        sf::Vertex(sf::Vector2f(context.position.x, context.position.y), sf::Color::Yellow),
+        sf::Vertex(sf::Vector2f(
+            context.position.x + std::cos(arrowAngle) * arrowLength,
+            context.position.y + std::sin(arrowAngle) * arrowLength
+        ), sf::Color::Yellow)
+    };
+    window.draw(arrow, 2, sf::PrimitiveType::Lines);
+}
+
+void Npc::ToggleVisionDebug()
+{
+    showVisionDebug = !showVisionDebug;
+    std::cout << "Vision debug: " << (showVisionDebug ? "ON" : "OFF") << std::endl;
 }
 
 
@@ -185,6 +303,7 @@ void Npc::SetSpriteState(SpriteState state)
         ));
     }
 }
+
 
 void Npc::SetPlayer(Player* player)
 {

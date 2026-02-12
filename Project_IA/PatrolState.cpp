@@ -48,10 +48,12 @@ void NpcAi::PatrolState::Execute(NpcContext& _context)
 {
     if (waypoints.empty())
     {
-        std::cout << "WARNING: No waypoints!" << std::endl;
         return;
     }
-
+    if (Conditions::IsSeeingPlayer(_context) && _context.player != nullptr)
+    {  
+        _context.lastKnownPlayerPosition = _context.player->Getposition();
+    }
     if (_context.isWaiting)
     {
         _context.waitTimer -= 0.016f;
@@ -68,6 +70,10 @@ void NpcAi::PatrolState::Execute(NpcContext& _context)
         }
         else
         {
+            _context.lostPlayerTimer += _context.deltaTime;
+
+
+
             _context.velocity = { 0.0f, 0.0f };
             if (_context.npc != nullptr)
             {

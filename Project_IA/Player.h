@@ -36,6 +36,9 @@ private:
 
     Vector2 position;
 
+    sf::RectangleShape hitboxShape;
+    bool showHitbox; 
+
 public:
 
 
@@ -49,9 +52,17 @@ public:
     void ChangeState(State newState);
     void UpdateAnimation(float deltaTime);
 
+    
+    void DrawHitbox(sf::RenderWindow & window);
+    void ToggleHitbox();
+    sf::FloatRect GetHitbox() const;
+    
+
     sf::Sprite& GetSprite() { return *sprite; }
 
     Vector2 Getposition() const { return position; }
+
+
 
 };
 

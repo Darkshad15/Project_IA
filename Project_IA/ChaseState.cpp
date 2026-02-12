@@ -7,66 +7,96 @@
 void NpcAi::ChaseState::Enter(NpcContext& _context)
 {
     std::cout << "Entering Chase State" << std::endl;
-    _context.lostPlayerTimer = 0.f;  //Réinitialiser le timer
+    _context.lostPlayerTimer = 0.f;
     _context.npc->SetSpriteState(SpriteState::WALK);
-}
 
-void NpcAi::ChaseState::Execute(NpcContext& _context)
+    ////  FORCER la sauvegarde de la position actuelle du joueur
+    //if (_context.player != nullptr)
+    //{
+    //    _context.lastKnownPlayerPosition.x = _context.player->Getposition().x;
+    //    _context.lastKnownPlayerPosition.y = _context.player->Getposition().y;
+
+    //    std::cout << "CHASE ENTERED - Saved player position: ("
+    //        << _context.lastKnownPlayerPosition.x << ", "
+    //        << _context.lastKnownPlayerPosition.y << ")" << std::endl;
+    //}
+    //else
+    //{
+    //    std::cout << "ERROR: Player is nullptr when entering ChaseState!" << std::endl;
+    //}
+}
+void ChaseState::Execute(NpcContext& context)
 {
-    if (_context.player == nullptr)
+    if (context.player == nullptr)
     {
+        std::cout << "ERROR: Player is nullptr in ChaseState!" << std::endl;
         return;
     }
 
-    // Vérifier si on voit toujours le joueur
-    if (Conditions::IsSeeingPlayer(_context))
+    // DEBUG : Vérifier la vision
+    bool canSeePlayer = Conditions::IsSeeingPlayer(context);
+
+    //std::cout << "ChaseState Update - Can see player: " << (canSeePlayer ? "YES" : "NO") << std::endl;
+    //std::cout << "  NPC pos: (" << context.position.x << ", " << context.position.y << ")" << std::endl;
+    //std::cout << "  Player pos: (" << context.player->Getposition().x << ", " << context.player->Getposition().y << ")" << std::endl;
+    //std::cout << "  NPC facing right: " << context.facingRight << std::endl;
+
+    if (canSeePlayer)
     {
-        // On voit le joueur : réinitialiser le timer
-        _context.lostPlayerTimer = 0.f;
-        _context.lastKnownPlayerPosition = _context.player->Getposition();
+        // Mettre à jour la dernière position connue
+        context.lastKnownPlayerPosition = context.player->Getposition();
+        context.lostPlayerTimer = 0.f;
+
+        //std::cout << "  -> Updated last known position to: ("
+        //    << context.lastKnownPlayerPosition.x << ", "
+        //    << context.lastKnownPlayerPosition.y << ")" << std::endl;
 
         // Se déplacer vers le joueur
-        float dx = _context.player->Getposition().x - _context.position.x;
-        float dy = _context.player->Getposition().y - _context.position.y;
+        float dx = context.player->Getposition().x - context.position.x;
+        float dy = context.player->Getposition().y - context.position.y;
         float distance = std::sqrt(dx * dx + dy * dy);
 
         if (distance > 1.0f)
         {
-            _context.velocity.x = (dx / distance) * 150.0f;  // Vitesse de poursuite
-            _context.velocity.y = (dy / distance) * 150.0f;
+            context.velocity.x = (dx / distance) * 150.0f;
+            context.velocity.y = (dy / distance) * 150.0f;
         }
         else
         {
-            _context.velocity.x = 0.0f;
-            _context.velocity.y = 0.0f;
+            context.velocity.x = 0.0f;
+            context.velocity.y = 0.0f;
         }
     }
     else
     {
-        // On ne voit plus le joueur : incrémenter le timer
-        _context.lostPlayerTimer += _context.deltaTime;  // Vous devez passer deltaTime
+        // On ne voit plus le joueur
+        context.lostPlayerTimer += context.deltaTime;
 
-        // Optionnel : aller vers la dernière position connue
-        float dx = _context.lastKnownPlayerPosition.x - _context.position.x;
-        float dy = _context.lastKnownPlayerPosition.y - _context.position.y;
+        //std::cout << "  -> Lost player! Timer: " << context.lostPlayerTimer << std::endl;
+        //std::cout << "  -> Going to last known: ("
+        //    << context.lastKnownPlayerPosition.x << ", "
+        //    << context.lastKnownPlayerPosition.y << ")" << std::endl;
+
+        // Aller vers la dernière position connue
+        float dx = context.lastKnownPlayerPosition.x - context.position.x;
+        float dy = context.lastKnownPlayerPosition.y - context.position.y;
         float distance = std::sqrt(dx * dx + dy * dy);
 
         if (distance > 5.0f)
         {
-            _context.velocity.x = (dx / distance) * 100.0f;
-            _context.velocity.y = (dy / distance) * 100.0f;
+            context.velocity.x = (dx / distance) * 100.0f;
+            context.velocity.y = (dy / distance) * 100.0f;
         }
         else
         {
-            // Arrivé à la dernière position connue
-            _context.velocity.x = 0.0f;
-            _context.velocity.y = 0.0f;
+            context.velocity.x = 0.0f;
+            context.velocity.y = 0.0f;
         }
     }
 
     // Mettre à jour la position
-    _context.position.x += _context.velocity.x * _context.deltaTime;
-    _context.position.y += _context.velocity.y * _context.deltaTime;
+    context.position.x += context.velocity.x * context.deltaTime;
+    context.position.y += context.velocity.y * context.deltaTime;
 }
 
 void NpcAi::ChaseState::Exit(NpcContext& _context)

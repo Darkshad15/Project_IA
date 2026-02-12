@@ -24,6 +24,17 @@ private:
     sf::Sprite* sprite;
 
 
+    //AJOUTER CECI pour la zone de vision
+    sf::CircleShape visionCircle;
+    sf::ConvexShape visionCone;
+    bool showVisionDebug;
+
+
+    // Paramètres de vision
+    float visionRange;
+    float visionAngle;
+
+
     // Animation
     int frameWidth;
     int frameHeight;
@@ -52,6 +63,12 @@ public:
 
 
     void SetPlayer(Player* player);
+
+    void DrawVisionDebug(sf::RenderWindow& window);
+    void ToggleVisionDebug();
+
+
+
 
 };
 
