@@ -47,6 +47,7 @@ public:
 
 	void Init();
 	void Update(float deltaTime);
+    void keepInsideBackground();
     void Draw(sf::RenderWindow& window);
 	void HandleInput();
     void ChangeState(State newState);

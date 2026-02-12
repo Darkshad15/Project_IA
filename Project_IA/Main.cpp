@@ -20,12 +20,13 @@ int main()
 
 
     Player* player = new Player();
+    player->Init();
 
     menu.Init();
     menubackground.Init("../Assets/Background/MainMenu.png");
     gamebackground.Init("../Assets/Background/GameMap.png");
 
-    player->Init();
+  
 
     sf::Vector2u windowSize = window.getSize();
     menu.setWindowSize(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y));
@@ -37,12 +38,6 @@ int main()
     npc->Init();
 
     npc->SetPlayer(player);
-
-
-    sf::Clock clock;
-
-
-
     menu.setState(GameState::MAIN_MENU);
 
     bool isRunning = true;
@@ -196,6 +191,7 @@ int main()
         if (menu.getState() == GameState::PLAYING)
         {
             player->Update(deltaTime);
+            npc->Update(deltaTime);
             menubackground.update();
         }
         else
@@ -213,6 +209,7 @@ int main()
             // Mode jeu : afficher background et joueur
             gamebackground.draw(window);
             player->Draw(window);
+            npc->Draw(window);
         }
         else
         {
@@ -225,5 +222,6 @@ int main()
     }
 
         delete player;
+        delete npc;
         return 0;
 }

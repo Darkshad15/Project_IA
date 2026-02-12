@@ -1,4 +1,4 @@
-#include "NPC.h"
+ï»¿#include "NPC.h"
 #include "Player.h"
 #include <SFML/Graphics.hpp>
 
@@ -15,11 +15,12 @@ Npc::Npc() :
     facingRight(true),
     visionCircle(),
     visionCone(),
-    //showVisionDebug(true),  // Activé par défaut
+    showVisionDebug(true),  // ActivÃ© par dÃ©faut
     visionRange(200.0f),
-    visionAngle(90.0f)
+    visionAngle(120.0f)
 {
     std::cout << "NPC cree" << std::endl;
+    
     context.npc = nullptr;
     context.position = { 0.f, 0.f };
     context.velocity = { 0.f, 0.f };
@@ -38,7 +39,7 @@ Npc::Npc() :
 
 Npc::~Npc()
 {
-    delete sprite;  // Libérer la mémoire
+    delete sprite;  // LibÃ©rer la mÃ©moire
     sprite = nullptr;
 }
 
@@ -62,7 +63,7 @@ void Npc::Init()
         return;
     }
 
-    // État initial
+    // Ã‰tat initial
     context.currentSpriteState = SpriteState::IDLE;
     currentFrame = 0;
     frameCount = 4;
@@ -75,7 +76,7 @@ void Npc::Init()
     std::cout << "Taille texture complete: " << textureSize.x << "x" << textureSize.y << std::endl;
     std::cout << "Frame dimensions: " << frameWidth << "x" << frameHeight << std::endl;
 
-    // Créer le sprite avec la texture (COMME LE PLAYER)
+    // CrÃ©er le sprite avec la texture (COMME LE PLAYER)
     sprite = new sf::Sprite(textures[context.currentSpriteState]);
     sprite->setTexture(textures[context.currentSpriteState]);
     sprite->setTextureRect(sf::IntRect({ 0, 0 }, { static_cast<int>(frameWidth), static_cast<int>(frameHeight) }));
@@ -87,22 +88,22 @@ void Npc::Init()
     std::cout << "Sprite texture rect: " << sprite->getTextureRect().size.x << "x"
         << sprite->getTextureRect().size.y << std::endl;
 
-    // Mettre à jour le contexte
+    // Mettre Ã  jour le contexte
     context.npc = this;
-    context.position = { 100.0f, 100.0f };
+    context.position = { 20.0f, 220.0f };
     context.velocity = { 0.0f, 0.0f };
     context.currentWaypointIndex = 0;
     context.waitTimer = 0.0f;
     context.isWaiting = false;
     context.sprite = sprite;
 
-    // Définir les waypoints
+    // DÃ©finir les waypoints
     std::vector<Vector2> patrolPoints = {
-        {context.position.x, context.position.y + 100.0f},
-        {context.position.x + 100.0f,context.position.y + 100.0f},
+        {context.position.x, context.position.y},
+        {context.position.x + 500.0f,context.position.y},
     };
 
-    // Créer les états
+    // CrÃ©er les Ã©tats
     PatrolState* patrolState = fsm.CreateState<PatrolState>();
     ChaseState* chaseState = fsm.CreateState<ChaseState>();
 
@@ -149,7 +150,7 @@ void Npc::Update(float deltaTime)
     {
         sprite->setPosition({ context.position.x, context.position.y });
 
-        // Mettre à jour la direction
+        // Mettre Ã  jour la direction
         if (context.velocity.x > 0.01f)
         {
             facingRight = false;
@@ -165,6 +166,34 @@ void Npc::Update(float deltaTime)
     }
 
     UpdateAnimation(deltaTime);
+    keepInsideBackground();
+}
+
+void Npc::keepInsideBackground()
+{
+    sf::FloatRect bounds = sprite->getGlobalBounds();
+
+    float minY = 220.0f;
+    float minX = 0.0f;
+    float maxY = 600.0f - bounds.size.y;
+    float maxX = 1920.0f - bounds.size.x;
+
+
+    sf::Vector2f pos = sprite->getPosition();
+
+    if (pos.x < minX)
+        pos.x = minX;
+
+    if (pos.x > maxX)
+        pos.x = maxX;
+
+    if (pos.y < minY)
+        pos.y = minY;
+
+    if (pos.y > maxY)
+        pos.y = maxY;
+
+    sprite->setPosition(pos);
 }
 
 
@@ -187,7 +216,7 @@ void Npc::DrawVisionDebug(sf::RenderWindow& window)
     float npcDirection = context.facingRight ? 0.0f : 180.0f;
     float halfAngle = context.visionAngle / 2.0f;
 
-    // Créer un cône avec arc arrondi
+    // CrÃ©er un cÃ´ne avec arc arrondi
     const int arcPoints = 30;
     visionCone.setPointCount(arcPoints + 2);
 
@@ -206,10 +235,10 @@ void Npc::DrawVisionDebug(sf::RenderWindow& window)
 
     visionCone.setPosition({ context.position.x, context.position.y });
 
-    // Changer la couleur selon l'état
+    // Changer la couleur selon l'Ã©tat
     if (Conditions::IsSeeingPlayer(context))
     {
-        // Rouge si le joueur est détecté
+        // Rouge si le joueur est dÃ©tectÃ©
         visionCone.setFillColor(sf::Color(255, 0, 0, 80));
         visionCone.setOutlineColor(sf::Color(255, 0, 0, 200));
     }
@@ -232,7 +261,7 @@ void Npc::DrawVisionDebug(sf::RenderWindow& window)
         };
         window.draw(line, 2, sf::PrimitiveType::Lines);
 
-        // Point sur le joueur détecté
+        // Point sur le joueur dÃ©tectÃ©
         sf::CircleShape playerDot(8.0f);
         playerDot.setOrigin({ 8.0f, 8.0f });
         playerDot.setPosition({ context.player->Getposition().x, context.player->Getposition().y });
@@ -242,7 +271,7 @@ void Npc::DrawVisionDebug(sf::RenderWindow& window)
         window.draw(playerDot);
     }
 
-    // Afficher la dernière position connue
+    // Afficher la derniÃ¨re position connue
     if (context.lostPlayerTimer > 0.0f && context.lostPlayerTimer < 2.0f)
     {
         sf::CircleShape lastPosMarker(10.0f);
@@ -253,7 +282,7 @@ void Npc::DrawVisionDebug(sf::RenderWindow& window)
         lastPosMarker.setOutlineThickness(2.0f);
         window.draw(lastPosMarker);
 
-        // Ligne pointillée vers la dernière position
+        // Ligne pointillÃ©e vers la derniÃ¨re position
         sf::Vertex dashedLine[] = {
             sf::Vertex(sf::Vector2f(context.position.x, context.position.y), sf::Color(255, 165, 0, 150)),
             sf::Vertex(sf::Vector2f(context.lastKnownPlayerPosition.x, context.lastKnownPlayerPosition.y), sf::Color(255, 165, 0, 150))
@@ -261,7 +290,7 @@ void Npc::DrawVisionDebug(sf::RenderWindow& window)
         window.draw(dashedLine, 2, sf::PrimitiveType::Lines);
     }
 
-    // Afficher la direction avec une flèche
+    // Afficher la direction avec une flÃ¨che
     float arrowLength = 40.0f;
     float arrowAngle = npcDirection * 3.14159f / 180.0f;
     sf::Vertex arrow[] = {
@@ -294,7 +323,7 @@ void Npc::SetSpriteState(SpriteState state)
 
         sprite->setTexture(textures[state]);
 
-        // Réinitialiser l'animation
+        // RÃ©initialiser l'animation
         currentFrame = 0;
         animationTimer = 0.f;
         sprite->setTextureRect(sf::IntRect(

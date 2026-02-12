@@ -17,6 +17,10 @@ class Npc
 
 private:
 
+
+    float minY = 220.0f;
+    float maxY = 600.0f;
+
 	FSM::StateMachine<NpcContext&> fsm;
 	NpcContext context{};
 
@@ -54,6 +58,7 @@ public:
 
     void Init();
     void Update(float deltaTime);
+    void keepInsideBackground();
     void Draw(sf::RenderWindow& window);
     void SetSpriteState(SpriteState state);
     void UpdateAnimation(float deltaTime);

@@ -125,7 +125,7 @@ void Background::setPosition(float x)
 {
     if (isLoaded)
     {
-        sprite.setPosition({ x, 0.0f });
+        sprite.setPosition({ x, 6.0f });
     }
 }
 

@@ -1,4 +1,4 @@
-#include "Player.h"
+ï»¿#include "Player.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -28,7 +28,7 @@ Player::~Player()
 
 void Player::Init()
 {
-	std::cout << "=== Début Init() ===" << std::endl;
+	std::cout << "=== DÃ©but Init() ===" << std::endl;
 
 	// Charger toutes les textures
 	bool idle = textures[State::IDLE].loadFromFile("../Assets/Spritesheets/Enemy_Punk/idle.png");
@@ -39,7 +39,7 @@ void Player::Init()
 	std::cout << "idle: " << idle << ", walk: " << walk
 		<< ", punch: " << punch << ", hurt: " << hurt << std::endl;
 
-	// État initial
+	// Ã‰tat initial
 	currentState = State::IDLE;
 	currentFrame = 0;
 	frameCount = 4;
@@ -49,7 +49,7 @@ void Player::Init()
 	frameWidth = textureSize.x / frameCount;
 	frameHeight = textureSize.y;
 
-	std::cout << "Taille texture complète: " << textureSize.x << "x" << textureSize.y << std::endl;
+	std::cout << "Taille texture complÃ¨te: " << textureSize.x << "x" << textureSize.y << std::endl;
 	std::cout << "Frame dimensions: " << frameWidth << "x" << frameHeight << std::endl;
 
 
@@ -62,7 +62,7 @@ void Player::Init()
 
 	// CONFIGURER LA HITBOX
 	hitboxShape.setSize(sf::Vector2f(frameWidth , frameHeight));
-	hitboxShape.setOrigin({ frameWidth / 2.f  , frameHeight / 2.f });  // Même origine que le sprite
+	hitboxShape.setOrigin({ frameWidth / 2.f  , frameHeight / 2.f });  // MÃªme origine que le sprite
 	hitboxShape.setScale({ 0.8f, 1.f });
 	hitboxShape.setFillColor(sf::Color::Transparent);
 	//hitboxShape.setOutlineColor(sf::Color::Green);
@@ -71,6 +71,7 @@ void Player::Init()
 	std::cout << "=== Fin Init() ===" << std::endl;
 
 	std::cout << "=== Fin Init() ===" << std::endl;
+
 }
 
 void Player::Update(float deltaTime)
@@ -81,10 +82,39 @@ void Player::Update(float deltaTime)
 
 	velocity.x = 0.f;
 	velocity.y = 0.f;
+
+	keepInsideBackground();
+}
+
+void Player::keepInsideBackground()
+{
+	sf::FloatRect bounds = sprite->getGlobalBounds();
+
+	float minY = 220.0f;
+	float minX = 0.0f;
+	float maxY = 600.0f - bounds.size.y;
+	float maxX = 1920.0f - bounds.size.x;
+
+	sf::Vector2f pos = sprite->getPosition();
+
+	if (pos.x < minX)
+		pos.x = minX;
+
+	if (pos.x > maxX)
+		pos.x = maxX;
+
+	if (pos.y < minY)
+		pos.y = minY;
+
+	if (pos.y > maxY)
+		pos.y = maxY;
+
+	sprite->setPosition(pos);
 }
 
 void Player::HandleInput()
 {
+
 	float speed = 150.f;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
@@ -144,6 +174,7 @@ void Player::HandleInput()
 
 		hitboxShape.setPosition({ position.x, position.y });
 	}
+
 }
 
 
